@@ -1,0 +1,24 @@
+server:
+  port: 8090
+spring:
+  datasource:
+    password: ''
+    url: jdbc:mysql://localhost:3306/jwtDB?serverTimezone=UTC
+    username: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  mail:
+    host: smtp.gmail.com
+    password: qmxzjxslaqtohykv
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    username: waly0092@gmail.com
