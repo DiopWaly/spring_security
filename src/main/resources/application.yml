@@ -1,3 +1,4 @@
+inputFile: classpath:/data.csv
 server:
   port: 8090
 spring:
@@ -11,6 +12,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
+  batch:
+    job:
+      enabled: false
   mail:
     host: smtp.gmail.com
     password: qmxzjxslaqtohykv
@@ -20,5 +24,5 @@ spring:
         smtp:
           auth: true
           starttls:
-            enable: true
+            enable: false
     username: waly0092@gmail.com

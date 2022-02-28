@@ -1,5 +1,7 @@
 package sn.sun.web;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -25,6 +27,7 @@ import javax.websocket.server.PathParam;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +63,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import sn.sun.dao.ConfirmationTokenRepository;
 import sn.sun.entities.AppRole;
 import sn.sun.entities.AppUser;
@@ -305,6 +315,21 @@ public class AccountRestController {
 		userConfirmed.setEnabled(true);
 		accountService.saveUser(userConfirmed);
 		return "confirmed";
+	}
+	@GetMapping("/register/pdf")
+	public ResponseEntity<byte[]> generePdf() throws FileNotFoundException, JRException {
+		JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(accountService.findAllUser(10));
+		JasperReport compileReport = JasperCompileManager.compileReport(
+				new FileInputStream("src/main/resources/invoice.jrxml")
+				);
+		HashMap<String, Object> map = new HashMap<>();
+		JasperPrint report = JasperFillManager.fillReport(compileReport, map, beanCollectionDataSource);
+//		JasperExportManager.exportReportToPdfFile(report, "invoice.pdf");
+		byte[] data = JasperExportManager.exportReportToPdf(report);
+		HttpHeaders header = new HttpHeaders();
+		header.set(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=invoice.pdf");
+		
+		return ResponseEntity.ok().headers(header).contentType(MediaType.APPLICATION_PDF).body(data);
 	}
 	
 }
